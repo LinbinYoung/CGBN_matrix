@@ -176,7 +176,6 @@ void x_run_test(test_t operation, typename xmp_tester<tpi, bits>::x_instance_t *
   }
 }
 
-
 /*
  * Function: x_run_test
  * Description: Used to run test under different data size and tpi
@@ -499,17 +498,17 @@ int main(int argc, const char *argv[]) {
   }
 
   printf("Done...\n");
-  FILE *report=fopen("gpu_throughput_report.csv", "w");
-  if(report==NULL) {
-    printf("Unable to open \"gpu_throughput_report.csv\" in the local directory for writing\n");
-    exit(1);
-  }
-  else {
-    printf("Generating \"gpu_throughput_report.csv\"");
-    stats_report(report, false, chain, tests, XT_FIRST, XT_LAST, sizes, sizes_count);
-    fclose(report);
-  }
-  printf("\n\n");
-  stats_report(stdout, true, chain, tests, XT_FIRST, XT_LAST, sizes, sizes_count);
-  printf("\n");
+  // FILE *report=fopen("gpu_throughput_report.csv", "w");
+  // if(report==NULL) {
+  //   printf("Unable to open \"gpu_throughput_report.csv\" in the local directory for writing\n");
+  //   exit(1);
+  // }
+  // else {
+  //   printf("Generating \"gpu_throughput_report.csv\"");
+  //   stats_report(report, false, chain, tests, XT_FIRST, XT_LAST, sizes, sizes_count);
+  //   fclose(report);
+  // }
+  // printf("\n\n");
+  // stats_report(stdout, true, chain, tests, XT_FIRST, XT_LAST, sizes, sizes_count);
+  // printf("\n");
 }

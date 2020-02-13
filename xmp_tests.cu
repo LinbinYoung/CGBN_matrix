@@ -34,10 +34,11 @@ __device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_add(xmp_tester<tpi
   _env.load(x0, &(instances[_instance].x0));
   _env.load(x1, &(instances[_instance].x1));
 
-  _env.set(r, x0);
-  #pragma unroll 10
-  for(int32_t loop=0;loop<LOOPS;loop++)
-    _env.add(r, r, x1);
+  // _env.set(r, x0);
+  // #pragma unroll 10
+  // for(int32_t loop=0;loop<LOOPS;loop++)
+  //   _env.add(r, r, x1);
+  _env.add(r, x0, x1);
 
   _env.store(&(instances[_instance].r), r);
 }
@@ -133,13 +134,14 @@ __device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_mul(xmp_tester<tpi
   _env.load(x0, &(instances[_instance].x0));
   _env.load(x1, &(instances[_instance].x1));
 
-  _env.set(r, x0);
-  #pragma unroll 4
-  for(int32_t loop=0;loop<LOOPS;loop++) {
-    _env.mul_wide(w, r, x0);
-    _env.set(r, w._low);
-  }
-
+  // _env.set(r, x0);
+  // #pragma unroll 4
+  // for(int32_t loop=0;loop<LOOPS;loop++) {
+  //   _env.mul_wide(w, r, x0);
+  //   _env.set(r, w._low);
+  // }
+  _env.mul_wide(w, r, x0);
+  _env.set(r, w._low);
   _env.store(&(instances[_instance].r), r);
 }
 
