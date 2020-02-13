@@ -78,6 +78,7 @@ class xmp_tester {
   
   typedef struct {
     cgbn_mem_t<bits> x0, x1, x2;
+    cgbn_mem_t<bits> num;
     cgbn_mem_t<bits> o0, o1;
     cgbn_mem_t<bits> w0, w1;
     cgbn_mem_t<bits> r;
@@ -93,15 +94,21 @@ class xmp_tester {
   context_t _context;
   env_t     _env;
   int32_t   _instance;
+  cgbn_mem_t<bits> _elem;
   
   __device__ __forceinline__ xmp_tester(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {}  
-  
+  // __device__ __forceinline__ xmp_tester(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance, cgbn_mem_t<bits> *data) : _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {
+  //   cudaMemcpy();
+  // }
   static __host__ x_instance_t *x_generate_instances(gmp_randstate_t state, uint32_t count) {
     x_instance_t *instances=(x_instance_t *)malloc(sizeof(x_instance_t)*count);
     mpz_t         value;
-    
+    mpz_t         fixedvalue;
     mpz_init(value);
+    mpz_init(fixedvalue);
+    mpz_urandomb(fixedvalue, state, bits);
     for(int index=0;index<count;index++) {
+      from_mpz(instances[index].num._limbs, bits/32, fixedvalue); //set the num each time
       mpz_urandomb(value, state, bits);
       from_mpz(instances[index].x0._limbs, bits/32, value);
       mpz_urandomb(value, state, bits);
@@ -119,11 +126,13 @@ class xmp_tester {
       mpz_urandomb(value, state, 2*bits);
       from_mpz(instances[index].w1._limbs, bits*2/32, value);
     }
+    mpz_clear(fixedvalue);
     mpz_clear(value);
     return instances;
 }
 
   __device__ __forceinline__ void x_test_add(x_instance_t *instances);
+  __device__ __forceinline__ void x_test_addui(x_instance_t *instances);
   __device__ __forceinline__ void x_test_sub(x_instance_t *instances);
   __device__ __forceinline__ void x_test_accumulate(x_instance_t *instances);
   __device__ __forceinline__ void x_test_mul(x_instance_t *instances);
@@ -152,6 +161,8 @@ void x_run_test(test_t operation, typename xmp_tester<tpi, bits>::x_instance_t *
 
   if(operation==xt_add) 
     x_test_add_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
+  else if(operation==xt_addui)
+    x_test_addui_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
   else if(operation==xt_sub) 
     x_test_sub_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
   else if(operation==xt_accumulate) 
@@ -431,11 +442,11 @@ int main(int argc, const char *argv[]) {
     }//else
   }
 
+  //Bubble Sort
   for(int i=0;i<sizes_count;i++)
     for(int j=i+1;j<sizes_count;j++)
       if(sizes[i]>sizes[j]) {
         int s=sizes[i];
-
         sizes[i]=sizes[j];
         sizes[j]=s;
       }
@@ -446,7 +457,7 @@ int main(int argc, const char *argv[]) {
       tests[test-XT_FIRST]=true;
     }
   }
-  
+
   if(tpis_count==0) {
     tpis[tpis_count++]=4;
     tpis[tpis_count++]=8;
@@ -491,7 +502,6 @@ int main(int argc, const char *argv[]) {
             last->next=stats;
           last=stats;
         }
-
       }
     }
     x_free_data(data, INSTANCES);

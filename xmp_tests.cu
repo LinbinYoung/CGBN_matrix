@@ -24,41 +24,53 @@ IN THE SOFTWARE.
 
 
 /**************************************************************************
- * Addition
+ * Addition: scalar + scalar
  **************************************************************************/
 template<uint32_t tpi, uint32_t bits>
 __device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_add(xmp_tester<tpi, bits>::x_instance_t *instances) {
-  int32_t LOOPS=LOOP_COUNT(bits, xt_add);
+  //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
   bn_t    x0, x1, r;
-    
   _env.load(x0, &(instances[_instance].x0));
   _env.load(x1, &(instances[_instance].x1));
-
-  // _env.set(r, x0);
-  // #pragma unroll 10
-  // for(int32_t loop=0;loop<LOOPS;loop++)
-  //   _env.add(r, r, x1);
   _env.add(r, x0, x1);
-
   _env.store(&(instances[_instance].r), r);
 }
 
 template<uint32_t tpi, uint32_t bits>
 __global__ void x_test_add_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, uint32_t count) {
   uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
-  
   if(instance>=count)
     return;
-  
   xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
   tester.x_test_add(instances);
 }
 
 
 /**************************************************************************
+ * Addition: scalar + BigNum
+ **************************************************************************/
+ template<uint32_t tpi, uint32_t bits>
+ __device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_addui(xmp_tester<tpi, bits>::x_instance_t *instances) {
+   //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
+   bn_t    x0, num, r;
+   _env.load(x0, &(instances[_instance].x0));
+   _env.load(num, &(instances[_instance].num));
+   _env.add(r, x0, num);
+   _env.store(&(instances[_instance].r), r);
+ }
+ 
+ template<uint32_t tpi, uint32_t bits>
+ __global__ void x_test_addui_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, uint32_t count) {
+   uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
+   if(instance>=count)
+     return;
+   xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+   tester.x_test_addui(instances);
+ }
+
+/**************************************************************************
  * Subtraction
  **************************************************************************/
-
 template<uint32_t tpi, uint32_t bits>
 __device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_sub(xmp_tester<tpi, bits>::x_instance_t *instances) {
   int32_t LOOPS=LOOP_COUNT(bits, xt_sub);
@@ -112,35 +124,26 @@ __device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_accumulate(xmp_tes
 template<uint32_t tpi, uint32_t bits>
 __global__ void x_test_accumulate_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, uint32_t count) {
   uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
-  
   if(instance>=count)
     return;
-  
   xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
   tester.x_test_accumulate(instances);
 }
 
-
 /**************************************************************************
- * Multiplication
+ * Multiplication: scalar * num
  **************************************************************************/
 
 template<uint32_t tpi, uint32_t bits>
 __device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_mul(xmp_tester<tpi, bits>::x_instance_t *instances) {
-  int32_t   LOOPS=LOOP_COUNT(bits, xt_mul);
-  bn_t      x0, x1, r;
+  //int32_t   LOOPS=LOOP_COUNT(bits, xt_mul);
+  bn_t      x0, num, r;
   bn_wide_t w;
 
   _env.load(x0, &(instances[_instance].x0));
-  _env.load(x1, &(instances[_instance].x1));
+  _env.load(num, &(instances[_instance].num));
 
-  // _env.set(r, x0);
-  // #pragma unroll 4
-  // for(int32_t loop=0;loop<LOOPS;loop++) {
-  //   _env.mul_wide(w, r, x0);
-  //   _env.set(r, w._low);
-  // }
-  _env.mul_wide(w, r, x0);
+  _env.mul_wide(w, x0, num);
   _env.set(r, w._low);
   _env.store(&(instances[_instance].r), r);
 }

@@ -37,6 +37,7 @@ typedef enum {
   gt_modinv,
 
   xt_add,
+  xt_addui,
   xt_mul,
   xt_sub,
   xt_accumulate,
@@ -81,6 +82,8 @@ test_t gt_parse(const char *name) {
 test_t xt_parse(const char *name) {
   if(strcmp(name, "add")==0)
     return xt_add;
+  else if (strcmp(name, "addui"))
+    return xt_addui;
   else if(strcmp(name, "sub")==0)
     return xt_sub;
   else if(strcmp(name, "accumulate")==0)
@@ -106,6 +109,8 @@ const char *test_name(test_t test) {
   switch(test) {
     case gt_add: case xt_add:
       return "add";
+    case xt_addui:
+      return "addui";
     case gt_sub: case xt_sub:
       return "sub";
     case xt_accumulate:
