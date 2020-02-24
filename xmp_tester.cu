@@ -107,7 +107,6 @@ class xmp_tester {
 };
 
 #include "xmp_tests.cu"
-#include "xmp_test_powm.cu"
 
 /*
  * Function: x_run_test
