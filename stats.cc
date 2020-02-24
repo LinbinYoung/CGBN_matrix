@@ -27,11 +27,17 @@ typedef struct stats_s {
   int             tpi;
   int             size;
   double          time;  /* seconds */
-  double          instances;
-  double          throughput;
   struct stats_s *next;
 } stats_t;
 
+/*
+ * Function: stats_find_column
+ * Description: Check Whether the task is in pool
+ * Para: 
+ *   chain: task chain
+ *   tpi: thread per instance
+ *   size: size of instance
+ */ 
 bool stats_find_column(stats_t *chain, int tpi, int size) {
   while(chain!=NULL) {
     if(chain->tpi==tpi && chain->size==size)
@@ -41,9 +47,16 @@ bool stats_find_column(stats_t *chain, int tpi, int size) {
   return false;
 }
 
+/*
+ * Function: stats_find_fastest
+ * Description: Used to find the task from the task pool
+ * Para: 
+ *   chain: task chain
+ *   test_t: operation
+ *   size: size of instance
+ */ 
 stats_t *stats_find_fastest(stats_t *chain, test_t test, int size) {
   stats_t *found=NULL;
-  
   while(chain!=NULL) {
     if(chain->operation==test && chain->size==size) {
       if(found==NULL || chain->throughput > found->throughput)
@@ -54,6 +67,15 @@ stats_t *stats_find_fastest(stats_t *chain, test_t test, int size) {
   return found;
 }
 
+/*
+ * Function: stats_find
+ * Description: Modify the head of chain to the specific task
+ * Para: 
+ *   chain: task chain
+ *   test_t: operation
+ *   tpi: thread per instance
+ *   size: size of instance
+ */ 
 stats_t *stats_find(stats_t *chain, test_t test, int tpi, int size) {
   while(chain!=NULL) {
     if(chain->operation==test && (chain->tpi==tpi || chain->tpi==0) && chain->size==size)
@@ -63,9 +85,16 @@ stats_t *stats_find(stats_t *chain, test_t test, int tpi, int size) {
   return chain;
 }
 
+/*
+ * Function: stats_report_throughput
+ * Description: Write the throughtput into file
+ * Para: 
+ *   out: file pointer
+ *   bool: whether we should output in a pretty mode
+ *   stats: specific task 
+ */ 
 void stats_report_throughput(FILE *out, bool pretty, stats_t *stats) {
   double tp=stats->throughput;
-
   if(!pretty)
     fprintf(out, "%0.0lf", tp);
   else if(tp<10000)
@@ -96,9 +125,21 @@ void stats_report_throughput(FILE *out, bool pretty, stats_t *stats) {
     fprintf(out, "%0.4lg", tp);
 }
 
+/*
+ * Function: stats_report
+ * Description: Write the log report into file
+ * Para: 
+ *   out: file pointer
+ *   bool: whether we should output in a pretty mode
+ *   chain: task pool
+ *   tests: whether the task is performed
+ *   first: index of first operation
+ *   last: index of last operation
+ *   sizes: size of each instance
+ *   size_count: total number of instance
+ */ 
 void stats_report(FILE *out, bool pretty, stats_t *chain, bool *tests, int first, int last, int *sizes, int sizes_count) {
   test_t test;
-
   if(pretty) {
     fprintf(out, "             ");
     for(int size_index=0;size_index<sizes_count;size_index++) {
@@ -123,10 +164,10 @@ void stats_report(FILE *out, bool pretty, stats_t *chain, bool *tests, int first
           stats_report_throughput(out, pretty, stats_find(chain, test, tpi, sizes[size_index]));
           fprintf(out, "  ");
         }
-      }
+      }//end inner for
       fprintf(out, "\n");
     }
-  }
+  }//end pretty
   else {
     fprintf(out, ",");
     for(int index=0;index<sizes_count;index++) {

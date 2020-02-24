@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{caption2}
+\usepackage{subfigure}
+\usepackage{url}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{ulem}
+\lstset{
+    columns=fixed,       
+    numbers=left,                                        % 在左侧显示行号
+    frame=none,                                          % 不显示背景边框
+    backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色
+    keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+    numberstyle=\footnotesize\color{darkgray},           % 设定行号格式
+    commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+    stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+    showstringspaces=false,                              % 不显示字符串中的空格
+    language=c++,                                        % 设置语言
+}
+\title{CUDA api}
+\author{杨林彬@Clustar.ai}   %作者的名称
+\date{\today}       %日期
+\pagebreak 
+% 设置页面的环境,a4纸张大小，左右上下边距信息
+\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry} 
+\begin{document}
+\maketitle
+%生成目录设置
+\renewcommand{\contentsname}{Contents}
+\tableofcontents
+\pagebreak
+% \centerline{{《江湖》}}
+% \centerline{{飞雪连天射白鹿，}}
+% \centerline{{笑书神侠倚碧鸳。}}
+% \centerline{{红尘有你终相伴，}}
+% \centerline{{笑傲江湖情两牵。}}
+% \pagebreak
+% %摘要开始部分
+% \begin{abstract}
+% 虽然极大可能是回不了UC San Diego了，但是热爱生活心不会改变。 \par
+% 这篇报告主体内容是本人自2020年1月6日入职以来的学习历程。主要围绕着CUDA学习，高精度数值(Multiple Precision Number)运算，联邦学习(Federated Learning)以及对同态加密Pailler算法的的一点认识。\par
+% 静下心来，智慧升起。
+% \end{abstract}
+% \pagebreak
+%标题开始
+\end{document}

@@ -34,31 +34,14 @@ IN THE SOFTWARE.
 #include "tests.cc"
 #include "stats.cc"
 
-__host__ __device__ int64_t LOOP_COUNT(uint32_t bits, test_t test) {
-  if(test==xt_add)
-    return 1000*8192/bits;
-  else if(test==xt_sub)
-    return 1000*8192/bits;
-  else if(test==xt_accumulate)
-    return 1000*8192/bits;
-  else if(test==xt_mul)
-    return 100*8192/bits;
-  else if(test==xt_div_qr)
-    return 40*8192/bits;
-  else if(test==xt_sqrt)
-    return 40*8192/bits;
-  else if(test==xt_powm_odd)
-    return 8192/bits;
-  else if(test==xt_mont_reduce)
-    return 100*8192/bits;
-  else if(test==xt_gcd)
-    return 10*8192/bits;
-  else if(test==xt_modinv)
-    return 10*8192/bits;
-  else 
-    return 0;
-}
-
+/*
+ * Function: from_mpz
+ * Description: load value from mpz object into cgbn_mem_t
+ * Para: 
+ *   words: target room
+ *   count: number of words transferred
+ *   value: mpz value
+ */ 
 void from_mpz(uint32_t *words, uint32_t count, mpz_t value) {
   size_t written;
 
@@ -72,6 +55,8 @@ void from_mpz(uint32_t *words, uint32_t count, mpz_t value) {
     words[written++]=0;
 }
 
+/* xmp_tester: define each task
+*/
 template<uint32_t tpi, uint32_t bits>
 class xmp_tester {
   public:
@@ -79,8 +64,6 @@ class xmp_tester {
   typedef struct {
     cgbn_mem_t<bits> x0, x1, x2;
     cgbn_mem_t<bits> num;
-    cgbn_mem_t<bits> o0, o1;
-    cgbn_mem_t<bits> w0, w1;
     cgbn_mem_t<bits> r;
   } x_instance_t;
   
@@ -93,13 +76,10 @@ class xmp_tester {
   
   context_t _context;
   env_t     _env;
-  int32_t   _instance;
-  cgbn_mem_t<bits> _elem;
+  int32_t   _instance; //id of instance
   
   __device__ __forceinline__ xmp_tester(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {}  
-  // __device__ __forceinline__ xmp_tester(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance, cgbn_mem_t<bits> *data) : _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {
-  //   cudaMemcpy();
-  // }
+
   static __host__ x_instance_t *x_generate_instances(gmp_randstate_t state, uint32_t count) {
     x_instance_t *instances=(x_instance_t *)malloc(sizeof(x_instance_t)*count);
     mpz_t         value;
@@ -115,16 +95,6 @@ class xmp_tester {
       from_mpz(instances[index].x1._limbs, bits/32, value);
       mpz_urandomb(value, state, bits);
       from_mpz(instances[index].x2._limbs, bits/32, value);
-      mpz_urandomb(value, state, bits);
-      mpz_setbit(value, 0);
-      from_mpz(instances[index].o0._limbs, bits/32, value);
-      mpz_urandomb(value, state, bits);
-      mpz_setbit(value, 0);
-      from_mpz(instances[index].o1._limbs, bits/32, value);
-      mpz_urandomb(value, state, 2*bits);
-      from_mpz(instances[index].w0._limbs, bits*2/32, value);
-      mpz_urandomb(value, state, 2*bits);
-      from_mpz(instances[index].w1._limbs, bits*2/32, value);
     }
     mpz_clear(fixedvalue);
     mpz_clear(value);
@@ -133,15 +103,7 @@ class xmp_tester {
 
   __device__ __forceinline__ void x_test_add(x_instance_t *instances);
   __device__ __forceinline__ void x_test_addui(x_instance_t *instances);
-  __device__ __forceinline__ void x_test_sub(x_instance_t *instances);
-  __device__ __forceinline__ void x_test_accumulate(x_instance_t *instances);
   __device__ __forceinline__ void x_test_mul(x_instance_t *instances);
-  __device__ __forceinline__ void x_test_div_qr(x_instance_t *instances);
-  __device__ __forceinline__ void x_test_sqrt(x_instance_t *instances);
-  __device__ __forceinline__ void x_test_powm_odd(x_instance_t *instances);
-  __device__ __forceinline__ void x_test_mont_reduce(x_instance_t *instances);
-  __device__ __forceinline__ void x_test_gcd(x_instance_t *instances);
-  __device__ __forceinline__ void x_test_modinv(x_instance_t *instances);
 };
 
 #include "xmp_tests.cu"
@@ -163,24 +125,8 @@ void x_run_test(test_t operation, typename xmp_tester<tpi, bits>::x_instance_t *
     x_test_add_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
   else if(operation==xt_addui)
     x_test_addui_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
-  else if(operation==xt_sub) 
-    x_test_sub_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
-  else if(operation==xt_accumulate) 
-    x_test_accumulate_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
   else if(operation==xt_mul) 
     x_test_mul_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
-  else if(operation==xt_div_qr) 
-    x_test_div_qr_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
-  else if(operation==xt_sqrt) 
-    x_test_sqrt_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
-  else if(operation==xt_powm_odd) 
-    x_test_powm_odd_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
-  else if(operation==xt_mont_reduce) 
-    x_test_mont_reduce_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
-  else if(operation==xt_gcd) 
-    x_test_gcd_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
-  else if(operation==xt_modinv) 
-    x_test_modinv_kernel<tpi, bits><<<blocks, threads>>>(instances, count);
   else {
     printf("Unsupported operation -- needs to be added to x_run_test<...> in xmp_tester.cu\n");
     exit(1);
@@ -230,11 +176,9 @@ void x_run_test(stats_t *stats, test_t operation, void *instances, uint32_t coun
     total=total+time;
   }
   printf("\n");
-  total=total/1000.0;
+  total=total/1000.0; //from ms to s
   CUDA_CHECK(cudaFree(gpuInstances));
-  stats->instances=((int64_t)count)*LOOP_COUNT(bits, operation);
   stats->time=total/(double)repetitions;
-  stats->throughput=stats->instances/stats->time;
   stats->next=NULL;
 }
 
@@ -373,6 +317,8 @@ void *x_generate_data(gmp_randstate_t state, uint32_t tpi, uint32_t size, uint32
   }
 }
 
+/* Avoid Memory leak
+*/
 void x_free_data(void *data, uint32_t count) {
   free(data);
 }
@@ -410,7 +356,7 @@ int main(int argc, const char *argv[]) {
   gmp_randinit_default(state);
 
   for(int index=XT_FIRST;index<=XT_LAST;index++)
-    tests[index-XT_FIRST]=0;
+    tests[index-XT_FIRST]=0; // in C 0 = false
 
   for(int index=0;index<MAX_SIZES;index++)
     sizes[index]=0;
@@ -478,12 +424,13 @@ int main(int argc, const char *argv[]) {
     // sizes[sizes_count++]=7168;
     // sizes[sizes_count++]=8192;
   }
-    
+  /*
+   Start the task and build the task chain
+  */
   chain=NULL;
   last=NULL;
   for(int index=0;index<sizes_count;index++) {
-    if(!x_supported_size(sizes[index]))
-      printf("... %d ... invalid test size ...\n", sizes[index]);
+    if(!x_supported_size(sizes[index])) printf("... %d ... invalid test size ...\n", sizes[index]);
     printf("... generating data ...\n");
     data=x_generate_data(state, 32, sizes[index], INSTANCES);
     for(int tpi_index=0;tpi_index<tpis_count;tpi_index++) {
@@ -503,22 +450,22 @@ int main(int argc, const char *argv[]) {
           last=stats;
         }
       }
-    }
+    }//end for
     x_free_data(data, INSTANCES);
   }
 
   printf("Done...\n");
-  // FILE *report=fopen("gpu_throughput_report.csv", "w");
-  // if(report==NULL) {
-  //   printf("Unable to open \"gpu_throughput_report.csv\" in the local directory for writing\n");
-  //   exit(1);
-  // }
-  // else {
-  //   printf("Generating \"gpu_throughput_report.csv\"");
-  //   stats_report(report, false, chain, tests, XT_FIRST, XT_LAST, sizes, sizes_count);
-  //   fclose(report);
-  // }
-  // printf("\n\n");
-  // stats_report(stdout, true, chain, tests, XT_FIRST, XT_LAST, sizes, sizes_count);
-  // printf("\n");
+  FILE *report=fopen("gpu_throughput_report.csv", "w");
+  if(report==NULL) {
+    printf("Unable to open \"gpu_throughput_report.csv\" in the local directory for writing\n");
+    exit(1);
+  }
+  else {
+    printf("Generating \"gpu_throughput_report.csv\"");
+    stats_report(report, false, chain, tests, XT_FIRST, XT_LAST, sizes, sizes_count);
+    fclose(report);
+  }
+  printf("\n\n");
+  stats_report(stdout, true, chain, tests, XT_FIRST, XT_LAST, sizes, sizes_count);
+  printf("\n");
 }
