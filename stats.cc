@@ -48,26 +48,6 @@ bool stats_find_column(stats_t *chain, int tpi, int size) {
 }
 
 /*
- * Function: stats_find_fastest
- * Description: Used to find the task from the task pool
- * Para: 
- *   chain: task chain
- *   test_t: operation
- *   size: size of instance
- */ 
-stats_t *stats_find_fastest(stats_t *chain, test_t test, int size) {
-  stats_t *found=NULL;
-  while(chain!=NULL) {
-    if(chain->operation==test && chain->size==size) {
-      if(found==NULL || chain->throughput > found->throughput)
-        found=chain;
-    }
-    chain=chain->next;
-  }
-  return found;
-}
-
-/*
  * Function: stats_find
  * Description: Modify the head of chain to the specific task
  * Para: 
@@ -83,46 +63,6 @@ stats_t *stats_find(stats_t *chain, test_t test, int tpi, int size) {
     chain=chain->next;
   }
   return chain;
-}
-
-/*
- * Function: stats_report_throughput
- * Description: Write the throughtput into file
- * Para: 
- *   out: file pointer
- *   bool: whether we should output in a pretty mode
- *   stats: specific task 
- */ 
-void stats_report_throughput(FILE *out, bool pretty, stats_t *stats) {
-  double tp=stats->throughput;
-  if(!pretty)
-    fprintf(out, "%0.0lf", tp);
-  else if(tp<10000)
-    fprintf(out, "%6.0lf  ", tp);
-  else if(tp<1e5)
-    fprintf(out, "%6.2lf K", tp/1e3);
-  else if(tp<1e6)
-    fprintf(out, "%6.1lf K", tp/1e3);
-  else if(tp<1e7)
-    fprintf(out, "%6.3lf M", tp/1e6);
-  else if(tp<1e8)
-    fprintf(out, "%6.2lf M", tp/1e6);
-  else if(tp<1e9)
-    fprintf(out, "%6.1lf M", tp/1e6);
-  else if(tp<1e10)
-    fprintf(out, "%6.3lf B", tp/1e9);
-  else if(tp<1e11)
-    fprintf(out, "%6.2lf B", tp/1e9);
-  else if(tp<1e12)
-    fprintf(out, "%6.1lf B", tp/1e9);
-  else if(tp<1e13)
-    fprintf(out, "%6.3lf T", tp/1e12);
-  else if(tp<1e14)
-    fprintf(out, "%6.2lf T", tp/1e12);
-  else if(tp<1e15)
-    fprintf(out, "%6.1lf T", tp/1e12);
-  else
-    fprintf(out, "%0.4lg", tp);
 }
 
 /*
@@ -161,7 +101,7 @@ void stats_report(FILE *out, bool pretty, stats_t *chain, bool *tests, int first
         for(int tpi=1;tpi<=32;tpi=tpi*2) {
           if(stats_find(chain, test, tpi, sizes[size_index])==NULL)
             continue;
-          stats_report_throughput(out, pretty, stats_find(chain, test, tpi, sizes[size_index]));
+          //stats_report_throughput(out, pretty, stats_find(chain, test, tpi, sizes[size_index]));
           fprintf(out, "  ");
         }
       }//end inner for
@@ -182,7 +122,7 @@ void stats_report(FILE *out, bool pretty, stats_t *chain, bool *tests, int first
       test=static_cast<test_t>(test_index);
       fprintf(out, "\"%s\",", test_name(test));
       for(int size_index=0;size_index<sizes_count;size_index++) {
-        stats_report_throughput(out, pretty, stats_find_fastest(chain, test, sizes[size_index]));
+        //stats_report_throughput(out, pretty, stats_find_fastest(chain, test, sizes[size_index]));
         if(size_index<sizes_count-1)
           fprintf(out, ",");
       }
