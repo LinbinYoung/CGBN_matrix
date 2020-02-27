@@ -5,7 +5,7 @@
 ### 输入和输出数据
 数据类型：
 ```c++
-enum struct CCmode{
+enum struct Cmode{
   gpu,
   cpu,
   fpga

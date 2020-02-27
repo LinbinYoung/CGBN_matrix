@@ -18,7 +18,7 @@ Three kinds of compute Cmode
  *  gpu
  *  fpga
 */
-enum struct CCmode{
+enum struct Cmode{
   gpu,
   cpu,
   fpga
