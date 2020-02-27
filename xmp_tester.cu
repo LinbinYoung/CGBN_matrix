@@ -248,6 +248,11 @@ void* Data_Generator(gmp_randstate_t state, uint32_t tpi, uint32_t size, uint32_
   return (void *) &instance;
 }
 
+void ComputeInterface(test_t operation, uint32_t tpi, uint32_t size, void *input, void *output, uint32_t count){
+  x_run_test(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
+  return;
+}
+
 #ifndef INSTANCES
 #define INSTANCES 200000
 #endif
@@ -277,6 +282,6 @@ int main() {
   output_data = (void*)&result; //allocate memory for result
   if(!x_supported_tpi_size(TPI, DATA_SIZE)) continue;
   printf("... %s %d:%d ... ", test_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
-  x_run_test(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
+  ComputeInterface(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
   return 0;
 }
