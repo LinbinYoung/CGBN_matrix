@@ -253,7 +253,7 @@ int main() {
   */
   if(!supported_size(DATA_SIZE)) printf("... %d ... invalid test size ...\n", DATA_SIZE);
   printf("... generating data ...\n");
-  input_data=Data_Generator<INSTANCES>(state, 32, DATA_SIZE, INSTANCES);
+  input_data=Data_Generator<DATA_SIZE>(state, 32, DATA_SIZE, INSTANCES);
   ResultBase<DATA_SIZE>* result = new CPU_result<DATA_SIZE>(INSTANCES);
   output_data = (void*)result; //allocate memory for result
   if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
