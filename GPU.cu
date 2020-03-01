@@ -22,55 +22,48 @@ IN THE SOFTWARE.
 
 ***/
 
-/*
-__global__ void x_test_add_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, typename xmp_tester<tpi, bits>::mem_results *res, uint32_t count)；
-__global__ void x_test_addui_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, typename xmp_tester<tpi, bits>::bigNum num, typename xmp_tester<tpi, bits>::mem_results *res, uint32_t count)；
-__global__ void x_test_mul_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, typename xmp_tester<tpi, bits>::bigNum num, typename xmp_tester<tpi, bits>::mem_results *res, uint32_t count)；
-*/
-
 /**************************************************************************
  * Addition: scalar + scalar
  **************************************************************************/
 template<uint32_t tpi, uint32_t bits>
-__device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_add(xmp_tester<tpi, bits>::x_instance_t *instances, xmp_tester<tpi, bits>::mem_results *res) {
+__device__ __forceinline__ void GPUTask<tpi, bits>::x_test_add(GPU_Data *instances, GPU_result *res) {
   //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
   bn_t    x0, x1, r;
-  _env.load(x0, &(instances[_instance].x0));
-  _env.load(x1, &(instances[_instance].x1));
+  _env.load(x0, &(instances->x0[_instance]));
+  _env.load(x1, &(instances->x1[_instance]));
   _env.add(r, x0, x1);
-  _env.store(&(res[_instance].r), r);
+  _env.store(&(res->r[_instance]), r);
 }
 
 template<uint32_t tpi, uint32_t bits>
-__global__ void x_test_add_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, typename xmp_tester<tpi, bits>::mem_results *res, uint32_t count) {
+__global__ void x_test_add_kernel(GPU_Data *instances, GPU_result *res, uint32_t count) {
   uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
   if(instance>=count)
     return;
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  GPUTask<tpi, bits> tester(cgbn_no_checks, NULL, instance);
   tester.x_test_add(instances, res);
 }
-
 
 /**************************************************************************
  * Addition: scalar + BigNum
  **************************************************************************/
  template<uint32_t tpi, uint32_t bits>
- __device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_addui(xmp_tester<tpi, bits>::x_instance_t *instances, xmp_tester<tpi, bits>::bigNum bnum, xmp_tester<tpi, bits>::mem_results *res) {
+ __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_addui(GPU_Data *instances, GPU_result *res) {
    //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
    bn_t    x0, num, r;
-   _env.load(x0, &(instances[_instance].x0));
-   _env.load(num, &(bnum.val));
+   _env.load(x0, &(instances->x0[_instance]));
+   _env.load(num, &(instances->num));
    _env.add(r, x0, num);
-   _env.store(&(res[_instance].r), r);
+   _env.store(&(res->r[_instance]), r);
  }
  
  template<uint32_t tpi, uint32_t bits>
- __global__ void x_test_addui_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, typename xmp_tester<tpi, bits>::bigNum num, typename xmp_tester<tpi, bits>::mem_results *res, uint32_t count) {
+ __global__ void x_test_addui_kernel(GPU_Data *instances, GPU_result *res, uint32_t count) {
    uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
    if(instance>=count)
      return;
-   xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
-   tester.x_test_addui(instances, num, res);
+   GPUTask<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+   tester.x_test_addui(instances, res);
  }
 
 /**************************************************************************
@@ -78,26 +71,24 @@ __global__ void x_test_add_kernel(typename xmp_tester<tpi, bits>::x_instance_t *
  **************************************************************************/
 
 template<uint32_t tpi, uint32_t bits>
-__device__ __forceinline__ void xmp_tester<tpi, bits>::x_test_mul(xmp_tester<tpi, bits>::x_instance_t *instances, xmp_tester<tpi, bits>::bigNum bnum, xmp_tester<tpi, bits>::mem_results *res) {
+__device__ __forceinline__ void GPUTask<tpi, bits>::x_test_mul(GPU_Data *instances, GPU_result *res) {
   //int32_t   LOOPS=LOOP_COUNT(bits, xt_mul);
   bn_t      x0, num, r;
   bn_wide_t w;
 
-  _env.load(x0, &(instances[_instance].x0));
-  _env.load(num, &(bnum.val));
+  _env.load(x0, &(instances->x0[_instance]));
+  _env.load(num, &(instances->num));
 
   _env.mul_wide(w, x0, num);
   _env.set(r, w._low);
-  _env.store(&(res[_instance].r), r);
+  _env.store(&(res->r[_instance]), r);
 }
 
 template<uint32_t tpi, uint32_t bits>
-__global__ void x_test_mul_kernel(typename xmp_tester<tpi, bits>::x_instance_t *instances, typename xmp_tester<tpi, bits>::bigNum num, typename xmp_tester<tpi, bits>::mem_results *res, uint32_t count) {
+__global__ void x_test_mul_kernel(GPU_Data *instances, GPU_result *res, uint32_t count) {
   uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
-  
   if(instance>=count)
     return;
-  
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
-  tester.x_test_mul(instances, num, res);
+  GPUTask<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  tester.x_test_addui(instances, res);
 }
