@@ -59,7 +59,7 @@ class TaskBase{
 template<uint32_t tpi, uint32_t bits>
 class GPUTask : public TaskBase<tpi, bits> {
   public:
-    __device__ __forceinline__ GPUTask(typename TaskBase<tpi, bits>::cgbn_monitor_t monitor, typename TaskBase<tpi, bits>::cgbn_error_report_t *report, int32_t instance) : TaskBase<tpi, bits>(monitor, report, instance) {}  
+    __device__ __forceinline__ GPUTask(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : TaskBase<tpi, bits>(monitor, report, instance) {}  
 
     __device__ __forceinline__  void x_test_add(GPU_Data<bits> *instances, GPU_result<bits> *res);
     __device__ __forceinline__  void x_test_addui(GPU_Data<bits> *instances, GPU_result<bits> *res);
