@@ -37,7 +37,6 @@ class TaskBase{
     context_t _context;
     env_t     _env;
     int32_t   _instance;
-
     __device__ __forceinline__ TaskBase(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {}
     static __host__ void AcceptData(gmp_randstate_t state, DataBase<bits> *ins, uint32_t count){
       mpz_t         value;
@@ -60,7 +59,7 @@ class TaskBase{
 template<uint32_t tpi, uint32_t bits>
 class GPUTask : public TaskBase<tpi, bits> {
   public:
-    __device__ __forceinline__ GPUTask(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : TaskBase<tpi, bits>(monitor, report, instance) {}  
+    __device__ __forceinline__ GPUTask(TaskBase<tpi, bits>::cgbn_monitor_t monitor, TaskBase<tpi, bits>::cgbn_error_report_t *report, int32_t instance) : TaskBase<tpi, bits>(monitor, report, instance) {}  
 
     __device__ __forceinline__  void x_test_add(GPU_Data<bits> *instances, GPU_result<bits> *res);
     __device__ __forceinline__  void x_test_addui(GPU_Data<bits> *instances, GPU_result<bits> *res);
