@@ -36,14 +36,14 @@ xmp_tester:
 
 
 kepler:
-	nvcc $(INC) $(LIB) -I../include -arch=sm_35 C_API.cu -o C_API -lgmp -fopenmp
+	nvcc $(INC) $(LIB) -I../include -arch=sm_35 C_API.cu -o C_API -lgmp -Xcompiler -fopenmp
 
 maxwell:
-	nvcc $(INC) $(LIB) -I../include -arch=sm_50 C_API.cu -o C_API -lgmp -fopenmp
+	nvcc $(INC) $(LIB) -I../include -arch=sm_50 C_API.cu -o C_API -lgmp -Xcompiler -fopenmp
 
 pascal:
-	nvcc $(INC) $(LIB) -I../include -arch=sm_60 C_API.cu -o C_API -lgmp -fopenmp
+	nvcc $(INC) $(LIB) -I../include -arch=sm_60 C_API.cu -o C_API -lgmp -Xcompiler -fopenmp
 
 volta:
-	nvcc $(INC) $(LIB) -I../include -arch=sm_70 C_API.cu -o C_API -lgmp -fopenmp
+	nvcc $(INC) $(LIB) -I../include -arch=sm_70 C_API.cu -o C_API -lgmp -Xcompiler -fopenmp
 
