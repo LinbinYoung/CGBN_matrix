@@ -28,7 +28,7 @@ IN THE SOFTWARE.
 template<uint32_t tpi, uint32_t bits>
 __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_add(GPU_Data<bits> *instances, GPU_result<bits> *res) {
   //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
-  TaskBase<tpi, bits>::bn_t    x0, x1, r;
+  typename TaskBase<tpi, bits>::bn_t    x0, x1, r;
   _env.load(x0, &(instances->x0[_instance]));
   _env.load(x1, &(instances->x1[_instance]));
   _env.add(r, x0, x1);
@@ -50,7 +50,7 @@ __global__ void x_test_add_kernel(GPU_Data<bits> *instances, GPU_result<bits> *r
  template<uint32_t tpi, uint32_t bits>
  __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_addui(GPU_Data<bits> *instances, GPU_result<bits> *res) {
    //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
-   TaskBase<tpi, bits>::bn_t    x0, num, r;
+   typename TaskBase<tpi, bits>::bn_t    x0, num, r;
    _env.load(x0, &(instances->x0[_instance]));
    _env.load(num, &(instances->num));
    _env.add(r, x0, num);
@@ -72,8 +72,8 @@ __global__ void x_test_add_kernel(GPU_Data<bits> *instances, GPU_result<bits> *r
 
 template<uint32_t tpi, uint32_t bits>
 __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_mul(GPU_Data<bits> *instances, GPU_result<bits> *res) {
-  TaskBase<tpi, bits>::bn_t      x0, num, r;
-  TaskBase<tpi, bits>::bn_wide_t w;
+  typename TaskBase<tpi, bits>::bn_t      x0, num, r;
+  typename TaskBase<tpi, bits>::bn_wide_t w;
 
   _env.load(x0, &(instances->x0[_instance]));
   _env.load(num, &(instances->num));
