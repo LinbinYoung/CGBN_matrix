@@ -121,7 +121,7 @@ class DataBase{
     cgbn_mem_t<bits> *x0;
     cgbn_mem_t<bits> *x1;
     cgbn_mem_t<bits> num;
-    DataBase(uint32_t count):{}
+    DataBase(uint32_t count){}
     virtual ~DataBase(){}
 };
 
