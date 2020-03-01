@@ -133,35 +133,39 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
   return;
 }
 
-template<uint32_t bits>
-void* Data_Generator(gmp_randstate_t state, uint32_t tpi, uint32_t size, uint32_t count){
-  DataBase<bits>* instance = new CPU_Data<bits>(count);
-  if(size==128)
-    TaskBase<32, 128>::AcceptData(state, instance, count);
-  else if(size==256)
-    TaskBase<32, 256>::AcceptData(state, instance, count);
-  else if(size==512)
-    TaskBase<32, 512>::AcceptData(state, instance, count);
-  else if(size==1024)
-    TaskBase<32, 1024>::AcceptData(state, instance, count);
-  else if(size==2048)
-    TaskBase<32, 2048>::AcceptData(state, instance, count);
-  else if(size==3072)
-    TaskBase<32, 3072>::AcceptData(state, instance, count);
-  else if(size==4096)
-    TaskBase<32, 4096>::AcceptData(state, instance, count);
-  else if(size==5120)
-    TaskBase<32, 5120>::AcceptData(state, instance, count);
-  else if(size==6144)
-    TaskBase<32, 6144>::AcceptData(state, instance, count);
-  else if(size==7168)
-    TaskBase<32, 7168>::AcceptData(state, instance, count);
-  else if(size==8192)
-    TaskBase<32, 8192>::AcceptData(state, instance, count);
-  else {
-    printf("Unsupported size -- needs to be added to x_generate_data in xmp_tester.cu\n");
-    exit(1);
+template<uint32_t tpi, uint32_t bits>
+void* Data_Generator(gmp_randstate_t state, uint32_t count){
+  if(!supported_tpi_size(tpi, bits)){
+      return;
   }
+  DataBase<bits>* instance = new CPU_Data<bits>(count);
+  TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // if(size==128)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==256)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==512)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==1024)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==2048)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==3072)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==4096)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==5120)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==6144)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==7168)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else if(size==8192)
+  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
+  // else {
+  //   printf("Unsupported size -- needs to be added to x_generate_data in xmp_tester.cu\n");
+  //   exit(1);
+  // }
   return (void *) instance;
 }
 
