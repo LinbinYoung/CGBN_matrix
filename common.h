@@ -8,6 +8,7 @@
 #include <gmp.h>
 #include "cgbn/cgbn.h"
 #include <assert.h>
+#include "gpu_support.h"
 
 /* 
 ##################################
@@ -193,8 +194,8 @@ template<uint32_t bits>
 class ResultBase{
   public:
     cgbn_mem_t<bits> *r;
-    DataBase(uint32_t count){}
-    virtual ~DataBase(){}
+    ResultBase(uint32_t count){}
+    virtual ~ResultBase(){}
 };
 
 /* 

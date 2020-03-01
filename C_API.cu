@@ -23,7 +23,6 @@ IN THE SOFTWARE.
 ***/
 
 #include "common.h"
-#include "gpu_support.h"
 
 template<uint32_t tpi, uint32_t bits>
 class TaskBase{
@@ -40,7 +39,7 @@ class TaskBase{
     int32_t   _instance;
 
     __device__ __forceinline__ TaskBase(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {}
-    static __host__ void AcceptData(gmp_randstate_t state, DataBase *ins, uint32_t count){
+    static __host__ void AcceptData(gmp_randstate_t state, DataBase<bits> *ins, uint32_t count){
       mpz_t         value;
       mpz_t         fixedvalue;
       mpz_init(value);
@@ -63,9 +62,9 @@ class GPUTask : public TaskBase<tpi, bits> {
   public:
     __device__ __forceinline__ GPUTask(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : TaskBase(monitor, report, instance) {}  
 
-    __device__ __forceinline__  void x_test_add(DataBase<bits> *instances, ResultBase<bits> *res);
-    __device__ __forceinline__  void x_test_addui(DataBase<bits> *instances, ResultBase<bits> *res);
-    __device__ __forceinline__  void x_test_mul(DataBase<bits> *instances, ResultBase<bits> *res);
+    __device__ __forceinline__  void x_test_add(GPU_Data<bits> *instances, GPU_result<bits> *res);
+    __device__ __forceinline__  void x_test_addui(GPU_Data<bits> *instances, GPU_result<bits> *res);
+    __device__ __forceinline__  void x_test_mul(GPU_Data<bits> *instances, GPU_result<bits> *res);
 };
 
 #include "GPU.cu"
@@ -258,7 +257,7 @@ int main() {
   input_data=Data_Generator<INSTANCES>(state, 32, DATA_SIZE, INSTANCES);
   ResultBase<DATA_SIZE>* result = new CPU_result<DATA_SIZE>(INSTANCES);
   output_data = (void*)result; //allocate memory for result
-  if(!supported_tpi_size(TPI, DATA_SIZE)) continue;
+  if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
   printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
   run_gpu(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
   return 0;
