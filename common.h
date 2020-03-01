@@ -71,27 +71,27 @@ return compute mode
 */
 const char *actual_compute_name(Compute_Type test) {
   switch(test) {
-    case gt_add: case xt_add:
+    case xt_add:
       return "add";
     case xt_addui:
       return "addui";
-    case gt_sub: case xt_sub:
+    case xt_sub:
       return "sub";
     case xt_accumulate:
       return "accumulate";
-    case gt_mul: case xt_mul:
+    case xt_mul:
       return "mul";
-    case gt_div_qr: case xt_div_qr:
+    case xt_div_qr:
       return "div_qr";
-    case gt_sqrt: case xt_sqrt:
+    case xt_sqrt:
       return "sqrt";
-    case gt_powm_odd: case xt_powm_odd:
+    case xt_powm_odd:
       return "powm_odd";
-    case gt_mont_reduce: case xt_mont_reduce:
+    case xt_mont_reduce:
       return "mont_reduce";
-    case gt_gcd: case xt_gcd:
+    case xt_gcd:
       return "gcd";
-    case gt_modinv: case xt_modinv:
+    case xt_modinv:
       return "modinv";
   }
   return "unknown";
@@ -152,13 +152,13 @@ CPU_data
 * num: Big Number
 */
 template<uint32_t bits>
-class CPU_data : public DataBase<bits>{
+class CPU_Data : public DataBase<bits>{
   public:
-    CPU_data(int count):DataBase<bits>(count){
+    CPU_Data(int count):DataBase<bits>(count){
       this->x0 = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
       this->x1 = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
     }
-    ~CPU_data(){
+    ~CPU_Data(){
       free(this->x0);
       free(this->x1);
     }
@@ -193,7 +193,7 @@ template<uint32_t bits>
 class ResultBase{
   public:
     cgbn_mem_t<bits> *r;
-    DataBase(uint32_t count):{}
+    DataBase(uint32_t count){}
     virtual ~DataBase(){}
 };
 

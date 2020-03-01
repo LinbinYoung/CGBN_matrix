@@ -26,7 +26,7 @@ IN THE SOFTWARE.
  * Addition: scalar + scalar
  **************************************************************************/
 template<uint32_t tpi, uint32_t bits>
-__device__ __forceinline__ void GPUTask<tpi, bits>::x_test_add(GPU_Data *instances, GPU_result *res) {
+__device__ __forceinline__ void GPUTask<tpi, bits>::x_test_add(GPU_Data<bits> *instances, GPU_result<bits> *res) {
   //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
   bn_t    x0, x1, r;
   _env.load(x0, &(instances->x0[_instance]));
@@ -36,7 +36,7 @@ __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_add(GPU_Data *instanc
 }
 
 template<uint32_t tpi, uint32_t bits>
-__global__ void x_test_add_kernel(GPU_Data *instances, GPU_result *res, uint32_t count) {
+__global__ void x_test_add_kernel(GPU_Data<bits> *instances, GPU_result<bits> *res, uint32_t count) {
   uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
   if(instance>=count)
     return;
@@ -48,7 +48,7 @@ __global__ void x_test_add_kernel(GPU_Data *instances, GPU_result *res, uint32_t
  * Addition: scalar + BigNum
  **************************************************************************/
  template<uint32_t tpi, uint32_t bits>
- __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_addui(GPU_Data *instances, GPU_result *res) {
+ __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_addui(GPU_Data<bits> *instances, GPU_result<bits> *res) {
    //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
    bn_t    x0, num, r;
    _env.load(x0, &(instances->x0[_instance]));
@@ -58,7 +58,7 @@ __global__ void x_test_add_kernel(GPU_Data *instances, GPU_result *res, uint32_t
  }
  
  template<uint32_t tpi, uint32_t bits>
- __global__ void x_test_addui_kernel(GPU_Data *instances, GPU_result *res, uint32_t count) {
+ __global__ void x_test_addui_kernel(GPU_Data<bits> *instances, GPU_result<bits> *res, uint32_t count) {
    uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
    if(instance>=count)
      return;
@@ -71,8 +71,7 @@ __global__ void x_test_add_kernel(GPU_Data *instances, GPU_result *res, uint32_t
  **************************************************************************/
 
 template<uint32_t tpi, uint32_t bits>
-__device__ __forceinline__ void GPUTask<tpi, bits>::x_test_mul(GPU_Data *instances, GPU_result *res) {
-  //int32_t   LOOPS=LOOP_COUNT(bits, xt_mul);
+__device__ __forceinline__ void GPUTask<tpi, bits>::x_test_mul(GPU_Data<bits> *instances, GPU_result<bits> *res) {
   bn_t      x0, num, r;
   bn_wide_t w;
 
@@ -85,7 +84,7 @@ __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_mul(GPU_Data *instanc
 }
 
 template<uint32_t tpi, uint32_t bits>
-__global__ void x_test_mul_kernel(GPU_Data *instances, GPU_result *res, uint32_t count) {
+__global__ void x_test_mul_kernel(GPU_Data<bits> *instances, GPU_result<bits> *res, uint32_t count) {
   uint32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/tpi;
   if(instance>=count)
     return;

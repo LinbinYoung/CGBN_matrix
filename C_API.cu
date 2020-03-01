@@ -63,9 +63,9 @@ class GPUTask : public TaskBase<tpi, bits> {
   public:
     __device__ __forceinline__ GPUTask(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : TaskBase(monitor, report, instance) {}  
 
-    __device__ __forceinline__  void x_test_add(DataBase *instances, ResultBase *res);
-    __device__ __forceinline__  void x_test_addui(DataBase *instances, ResultBase *res);
-    __device__ __forceinline__  void x_test_mul(DataBase *instances, ResultBase *res);
+    __device__ __forceinline__  void x_test_add(DataBase<bits> *instances, ResultBase<bits> *res);
+    __device__ __forceinline__  void x_test_addui(DataBase<bits> *instances, ResultBase<bits> *res);
+    __device__ __forceinline__  void x_test_mul(DataBase<bits> *instances, ResultBase<bits> *res);
 };
 
 #include "GPU.cu"
@@ -180,7 +180,7 @@ extern "C"{
   *   count       : number of instance
   */
   void run_gpu(Compute_Type operation, uint32_t tpi, uint32_t size, void *input, void *output, uint32_t count) {
-    if(!x_supported_tpi_size(tpi, size)) {
+    if(!supported_tpi_size(tpi, size)) {
       printf("Unsupported tpi and size -- needs to be added to x_run_test in xmp_tester.cu\n");
       exit(1);
     }
@@ -253,13 +253,13 @@ int main() {
   /*
    Start the task
   */
-  if(!supported_size(DATA_SIZE)) printf("... %d ... invalid test size ...\n", sizes[index]);
+  if(!supported_size(DATA_SIZE)) printf("... %d ... invalid test size ...\n", DATA_SIZE);
   printf("... generating data ...\n");
-  input_data=Data_Generator(state, 32, DATA_SIZE, INSTANCES);
+  input_data=Data_Generator<INSTANCES>(state, 32, DATA_SIZE, INSTANCES);
   ResultBase<DATA_SIZE>* result = new CPU_result<DATA_SIZE>(INSTANCES);
   output_data = (void*)result; //allocate memory for result
-  if(!x_supported_tpi_size(TPI, DATA_SIZE)) continue;
-  printf("... %s %d:%d ... ", test_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
+  if(!supported_tpi_size(TPI, DATA_SIZE)) continue;
+  printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
   run_gpu(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
   return 0;
 }
