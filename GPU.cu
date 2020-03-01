@@ -29,10 +29,10 @@ template<uint32_t tpi, uint32_t bits>
 __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_add(GPU_Data<bits> *instances, GPU_result<bits> *res) {
   //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
   typename TaskBase<tpi, bits>::bn_t    x0, x1, r;
-  _env.load(x0, &(instances->x0[_instance]));
-  _env.load(x1, &(instances->x1[_instance]));
-  _env.add(r, x0, x1);
-  _env.store(&(res->r[_instance]), r);
+  this->_env.load(x0, &(instances->x0[this->_instance]));
+  this->_env.load(x1, &(instances->x1[this->_instance]));
+  this->_env.add(r, x0, x1);
+  this->_env.store(&(res->r[this->_instance]), r);
 }
 
 template<uint32_t tpi, uint32_t bits>
@@ -51,10 +51,10 @@ __global__ void x_test_add_kernel(GPU_Data<bits> *instances, GPU_result<bits> *r
  __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_addui(GPU_Data<bits> *instances, GPU_result<bits> *res) {
    //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
    typename TaskBase<tpi, bits>::bn_t    x0, num, r;
-   _env.load(x0, &(instances->x0[_instance]));
-   _env.load(num, &(instances->num));
-   _env.add(r, x0, num);
-   _env.store(&(res->r[_instance]), r);
+   this->_env.load(x0, &(instances->x0[this->_instance]));
+   this->_env.load(num, &(instances->num));
+   this->_env.add(r, x0, num);
+   this->_env.store(&(res->r[this->_instance]), r);
  }
  
  template<uint32_t tpi, uint32_t bits>
@@ -75,12 +75,12 @@ __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_mul(GPU_Data<bits> *i
   typename TaskBase<tpi, bits>::bn_t      x0, num, r;
   typename TaskBase<tpi, bits>::bn_wide_t w;
 
-  _env.load(x0, &(instances->x0[_instance]));
-  _env.load(num, &(instances->num));
+  this->_env.load(x0, &(instances->x0[this->_instance]));
+  this->_env.load(num, &(instances->num));
 
-  _env.mul_wide(w, x0, num);
-  _env.set(r, w._low);
-  _env.store(&(res->r[_instance]), r);
+  this->_env.mul_wide(w, x0, num);
+  this->_env.set(r, w._low);
+  this->_env.store(&(res->r[this->_instance]), r);
 }
 
 template<uint32_t tpi, uint32_t bits>
