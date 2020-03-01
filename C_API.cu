@@ -118,8 +118,8 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
     2. Initialized data
   */
 
-  CUDA_CHECK(cudaMemcpy(input_gpuins->x0, (GPU_Data<bits>*)instances->x0, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
-  CUDA_CHECK(cudaMemcpy(input_gpuins->x1, (GPU_Data<bits>*)instances->x1, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
+  CUDA_CHECK(cudaMemcpy(input_gpuins->x0, ((GPU_Data<bits>*)instances)->x0, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
+  CUDA_CHECK(cudaMemcpy(input_gpuins->x1, ((GPU_Data<bits>*)instances)->x1, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
   /*
    3. Start compute on GPU
   */
@@ -127,7 +127,7 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
   x_run_test<tpi, bits>(operation, (GPU_Data<bits> *)input_gpuins, (GPU_result<bits> *)output_gpu, count);
   CUDA_CHECK(cudaDeviceSynchronize());
   printf("GPU, computation: %.31f s\n", gpu.stop());
-  CUDA_CHECK(cudaMemcpy((CPU_result*)res_cpu->r, output_gpu->r, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyDeviceToHost)); //copy results back to memory
+  CUDA_CHECK(cudaMemcpy(((CPU_result<bits>*)res_cpu)->r, output_gpu->r, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyDeviceToHost)); //copy results back to memory
   /*
     4. Task finished
   */
