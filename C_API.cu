@@ -135,7 +135,7 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
 
 template<uint32_t bits>
 void* Data_Generator(gmp_randstate_t state, uint32_t tpi, uint32_t size, uint32_t count){
-  TaskBase<bits>* instance = new CPU_Data<bits>(count);
+  DataBase<bits>* instance = new CPU_Data<bits>(count);
   if(size==128)
     TaskBase<32, 128>::AcceptData(state, instance, count);
   else if(size==256)
