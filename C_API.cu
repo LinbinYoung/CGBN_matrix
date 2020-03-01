@@ -136,7 +136,7 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
 template<uint32_t tpi, uint32_t bits>
 void* Data_Generator(gmp_randstate_t state, uint32_t count){
   if(!supported_tpi_size(tpi, bits)){
-      return;
+      return NULL;
   }
   DataBase<bits>* instance = new CPU_Data<bits>(count);
   TaskBase<tpi, bits>::AcceptData(state, instance, count);
