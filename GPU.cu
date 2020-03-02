@@ -29,11 +29,11 @@ template<uint32_t tpi, uint32_t bits>
 __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_add(GPU_Data<bits> *instances, GPU_result<bits> *res) {
   //int32_t LOOPS=LOOP_COUNT(bits, xt_add);
   typename TaskBase<tpi, bits>::bn_t    x0, x1, r;
-  printf("%d\n", this->_instance);
-  // this->_env.load(x0, &(instances->x0[this->_instance]));
-  // this->_env.load(x1, &(instances->x1[this->_instance]));
-  // this->_env.add(r, x0, x1);
-  // this->_env.store(&(res->r[this->_instance]), r);
+  this->_env.load(x0, &(instances->x0[this->_instance]));
+  exit(0);
+  this->_env.load(x1, &(instances->x1[this->_instance]));
+  this->_env.add(r, x0, x1);
+  this->_env.store(&(res->r[this->_instance]), r);
 }
 
 template<uint32_t tpi, uint32_t bits>
