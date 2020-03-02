@@ -119,6 +119,7 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
 
   CUDA_CHECK(cudaMemcpy(input_gpuins->x0, ((GPU_Data<bits>*)instances)->x0, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
   CUDA_CHECK(cudaMemcpy(input_gpuins->x1, ((GPU_Data<bits>*)instances)->x1, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
+  exit(0);
   /*
    3. Start compute on GPU
   */
@@ -209,7 +210,7 @@ extern "C"{
     else if(tpi==16 && size==2048)
       x_run_test<16, 2048>(operation, input, output, count);
     else if(tpi==32 && size==2048)
-      x_run_test<32, 2048>(operation, input, output, count);
+      {cout << "call run_gpu" << endl; x_run_test<32, 2048>(operation, input, output, count);}
     else if(tpi==16 && size==3072)
       x_run_test<16, 3072>(operation, input, output, count);
     else if(tpi==32 && size==3072)
