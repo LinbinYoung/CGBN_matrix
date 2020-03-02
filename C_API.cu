@@ -81,11 +81,11 @@ template<uint32_t tpi, uint32_t bits>
 void x_run_test(Compute_Type operation, DataBase<bits> *instances, ResultBase<bits> *res, uint32_t count) {
   int threads=128, IPB=threads/tpi, blocks=(count+IPB-1)*tpi/threads;
   if(operation==xt_add) 
-    x_test_add_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count);
+    {x_test_add_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); CUDA_CHECK(cudaDeviceSynchronize());}
   else if (operation==xt_addui)
-    x_test_addui_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count);
+    {x_test_addui_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); CUDA_CHECK(cudaDeviceSynchronize());}
   else if (operation==xt_mul)
-    x_test_mul_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count);
+    {x_test_mul_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); CUDA_CHECK(cudaDeviceSynchronize());}
   else {
     printf("Unsupported operation -- needs to be added to x_run_test<...> in xmp_tester.cu\n");
     exit(1);
@@ -119,13 +119,11 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
 
   CUDA_CHECK(cudaMemcpy(input_gpuins->x0, ((GPU_Data<bits>*)instances)->x0, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
   CUDA_CHECK(cudaMemcpy(input_gpuins->x1, ((GPU_Data<bits>*)instances)->x1, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
-  exit(0);
   /*
    3. Start compute on GPU
   */
   Timer gpu;
   x_run_test<tpi, bits>(operation, (GPU_Data<bits> *)input_gpuins, (GPU_result<bits> *)output_gpu, count);
-  CUDA_CHECK(cudaDeviceSynchronize());
   printf("GPU, computation: %.31f s\n", gpu.stop());
   CUDA_CHECK(cudaMemcpy(((CPU_result<bits>*)res_cpu)->r, output_gpu->r, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyDeviceToHost)); //copy results back to memory
   /*
@@ -210,7 +208,7 @@ extern "C"{
     else if(tpi==16 && size==2048)
       x_run_test<16, 2048>(operation, input, output, count);
     else if(tpi==32 && size==2048)
-      {printf("call run_gpu"); x_run_test<32, 2048>(operation, input, output, count);}
+      {printf("call run_gpu\n"); x_run_test<32, 2048>(operation, input, output, count);}
     else if(tpi==16 && size==3072)
       x_run_test<16, 3072>(operation, input, output, count);
     else if(tpi==32 && size==3072)
