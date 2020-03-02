@@ -83,7 +83,7 @@ void x_run_test(Compute_Type operation, DataBase<bits> *instances, ResultBase<bi
   printf("Number of threads in block %d\n", threads);
   printf("Number of instances can be processed %d\n", IPB);
   printf("Number of blocks %d\n", blocks);
-  exit();
+  exit(0);
   if(operation==xt_add) 
     {x_test_add_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); CUDA_CHECK(cudaDeviceSynchronize());}
   else if (operation==xt_addui)
