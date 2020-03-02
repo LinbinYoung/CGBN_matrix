@@ -80,6 +80,10 @@ class GPUTask : public TaskBase<tpi, bits> {
 template<uint32_t tpi, uint32_t bits>
 void x_run_test(Compute_Type operation, DataBase<bits> *instances, ResultBase<bits> *res, uint32_t count) {
   int threads=128, IPB=threads/tpi, blocks=(count+IPB-1)*tpi/threads;
+  printf("Number of threads in block %d\n", threads);
+  printf("Number of instances can be processed %d\n", IPB);
+  printf("Number of blocks %d\n", blocks);
+  exit();
   if(operation==xt_add) 
     {x_test_add_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); CUDA_CHECK(cudaDeviceSynchronize());}
   else if (operation==xt_addui)
