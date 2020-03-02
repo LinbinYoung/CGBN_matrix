@@ -210,7 +210,7 @@ extern "C"{
     else if(tpi==16 && size==2048)
       x_run_test<16, 2048>(operation, input, output, count);
     else if(tpi==32 && size==2048)
-      {cout << "call run_gpu" << endl; x_run_test<32, 2048>(operation, input, output, count);}
+      {printf("call run_gpu"); x_run_test<32, 2048>(operation, input, output, count);}
     else if(tpi==16 && size==3072)
       x_run_test<16, 3072>(operation, input, output, count);
     else if(tpi==32 && size==3072)
