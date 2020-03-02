@@ -242,7 +242,7 @@ extern "C"{
 #endif
 
 #ifndef TPI
-#define TPI 4
+#define TPI 32
 #endif
 
 int main() {

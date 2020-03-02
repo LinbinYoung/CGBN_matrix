@@ -17,7 +17,6 @@ Different Compute Type
 typedef enum {
   test_all,
   test_unknown,
-  
   xt_add,
   xt_addui,
   xt_mul,
@@ -29,7 +28,6 @@ typedef enum {
   xt_mont_reduce,
   xt_gcd,
   xt_modinv,
-
 } Compute_Type;
 
 #define XT_FIRST xt_add
