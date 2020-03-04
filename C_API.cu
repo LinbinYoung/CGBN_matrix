@@ -83,12 +83,18 @@ void x_run_test(Compute_Type operation, DataBase<bits> *instances, ResultBase<bi
   printf("Number of threads in block %d\n", threads);
   printf("Number of instances can be processed %d\n", IPB);
   printf("Number of blocks %d\n", blocks);
-  if(operation==xt_add) 
-    {x_test_add_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); CUDA_CHECK(cudaDeviceSynchronize());}
-  else if (operation==xt_addui)
-    {x_test_addui_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); CUDA_CHECK(cudaDeviceSynchronize());}
-  else if (operation==xt_mul)
-    {x_test_mul_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); CUDA_CHECK(cudaDeviceSynchronize());}
+  if(operation==xt_add){
+      x_test_add_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); 
+      CUDA_CHECK(cudaDeviceSynchronize());
+  }
+  else if (operation==xt_addui){
+      x_test_addui_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); 
+      CUDA_CHECK(cudaDeviceSynchronize());
+  }
+  else if (operation==xt_mul){
+      x_test_mul_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); 
+      CUDA_CHECK(cudaDeviceSynchronize());
+  }
   else {
     printf("Unsupported operation -- needs to be added to x_run_test<...> in xmp_tester.cu\n");
     exit(1);
@@ -130,8 +136,11 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
   printf("GPU, computation: %.31f s\n", gpu.stop());
   CUDA_CHECK(cudaMemcpy(((CPU_result<bits>*)res_cpu)->r, output_gpu->r, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyDeviceToHost)); //copy results back to memory
   /*
-    4. Task finished
+    4. Task finished, free memory
   */
+  delete input_gpuins;
+  delete input_cpuins;
+  delete output_gpu;
   return;
 }
 
@@ -141,11 +150,6 @@ void* Data_Generator(gmp_randstate_t state, uint32_t count){
       return NULL;
   }
   DataBase<bits>* instance = new CPU_Data<bits>(count);
-  for (int i = 0; i < count; i ++){
-    print_words(((CPU_Data<bits>*)instance)->x0[i]._limbs, (bits+31)/32);
-    printf("check size: %d", (bits+31)/32);
-    break;
-  }
   TaskBase<tpi, bits>::AcceptData(state, instance, count);
   return (void *) instance;
 }
@@ -239,16 +243,10 @@ int main() {
   if(!supported_size(DATA_SIZE)) printf("... %d ... invalid test size ...\n", DATA_SIZE);
   printf("... generating data ...\n");
   input_data=Data_Generator<TPI, DATA_SIZE>(state, INSTANCES);
-  for (int i = 0; i < INSTANCES; i ++){
-    printf("After Initialized\n");
-    printf("check size: %d", (DATA_SIZE+31)/32);
-    print_words(((CPU_Data<DATA_SIZE>*)input_data)->x0[i]._limbs, (DATA_SIZE+31)/2);
-    break;
-  }
-  // ResultBase<DATA_SIZE>* result = new CPU_result<DATA_SIZE>(INSTANCES);
-  // output_data = (void*)result; //allocate memory for result
-  // if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
-  // printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
-  // run_gpu(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
+  ResultBase<DATA_SIZE>* result = new CPU_result<DATA_SIZE>(INSTANCES);
+  output_data = (void*)result; //allocate memory for result
+  if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
+  printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
+  run_gpu(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
   return 0;
 }
