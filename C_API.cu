@@ -141,7 +141,7 @@ void* Data_Generator(gmp_randstate_t state, uint32_t count){
       return NULL;
   }
   DataBase<bits>* instance = new CPU_Data<bits>(count);
-  for (int i = 0; i < INSTANCES; i ++){
+  for (int i = 0; i < count; i ++){
     print_words(((CPU_Data<bits>*)instance)->x0[i]._limbs, (bits+31)/32);
     break;
   }
