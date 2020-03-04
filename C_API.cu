@@ -142,7 +142,7 @@ void* Data_Generator(gmp_randstate_t state, uint32_t count){
   }
   DataBase<bits>* instance = new CPU_Data<bits>(count);
   for (int i = 0; i < INSTANCES; i ++){
-    print_words(((CPU_Data<bits>*)instance)->x0[i], (bits+31)/32);
+    print_words(((CPU_Data<bits>*)instance)->x0[i]._limbs, (bits+31)/32);
     break;
   }
   TaskBase<tpi, bits>::AcceptData(state, instance, count);
@@ -239,7 +239,7 @@ int main() {
   printf("... generating data ...\n");
   input_data=Data_Generator<TPI, DATA_SIZE>(state, INSTANCES);
   for (int i = 0; i < INSTANCES; i ++){
-    print_words(((CPU_Data<DATA_SIZE>*)input_data)->x0[i], (DATA_SIZE+31)/2);
+    print_words(((CPU_Data<DATA_SIZE>*)input_data)->x0[i]._limbs, (DATA_SIZE+31)/2);
     break;
   }
   // ResultBase<DATA_SIZE>* result = new CPU_result<DATA_SIZE>(INSTANCES);
