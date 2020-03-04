@@ -141,33 +141,11 @@ void* Data_Generator(gmp_randstate_t state, uint32_t count){
       return NULL;
   }
   DataBase<bits>* instance = new CPU_Data<bits>(count);
+  for (int i = 0; i < INSTANCES; i ++){
+    print_words(((CPU_Data*)instance)->x0[i], (bits+31)/32);
+    break;
+  }
   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // if(size==128)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==256)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==512)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==1024)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==2048)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==3072)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==4096)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==5120)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==6144)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==7168)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else if(size==8192)
-  //   TaskBase<tpi, bits>::AcceptData(state, instance, count);
-  // else {
-  //   printf("Unsupported size -- needs to be added to x_generate_data in xmp_tester.cu\n");
-  //   exit(1);
-  // }
   return (void *) instance;
 }
 
@@ -260,10 +238,14 @@ int main() {
   if(!supported_size(DATA_SIZE)) printf("... %d ... invalid test size ...\n", DATA_SIZE);
   printf("... generating data ...\n");
   input_data=Data_Generator<TPI, DATA_SIZE>(state, INSTANCES);
-  ResultBase<DATA_SIZE>* result = new CPU_result<DATA_SIZE>(INSTANCES);
-  output_data = (void*)result; //allocate memory for result
-  if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
-  printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
-  run_gpu(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
+  for (int i = 0; i < INSTANCES; i ++){
+    print_words(((CPU_Data*)input_data)->x0[i], (DATA_SIZE+31)/2);
+    break;
+  }
+  // ResultBase<DATA_SIZE>* result = new CPU_result<DATA_SIZE>(INSTANCES);
+  // output_data = (void*)result; //allocate memory for result
+  // if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
+  // printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
+  // run_gpu(XT_FIRST, TPI, DATA_SIZE, input_data, output_data, INSTANCES);
   return 0;
 }

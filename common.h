@@ -306,3 +306,40 @@ void from_mpz(uint32_t *words, uint32_t count, mpz_t value) {
   mpz_export(words, &written, -1, sizeof(uint32_t), 0, 0, value);
   while(written<count) words[written++]=0;
 }
+
+/*
+##################################
+print_words
+* x: words array
+* count: (bits + 31) / 32, number of words in array
+*/
+void print_words(uint32_t *x, uint32_t count){
+    int index;
+    for (index=count-1; index>=0; index--){
+        //little endian, so we print in reverse order
+        printf("%08X", x[index]);
+    }
+    printf("\n");
+}
+
+/*
+##################################
+compare_words
+* para:
+* x: words array
+* y: words array
+* count: (bits + 31) / 32, number of words in array
+* return:
+* 1 : x > y
+* -1: x < y
+* 0 : x = y
+*/
+int compare_words(uint32_t *x, uint32_t *y, uint32_t count){
+  int index;
+  for (index = count-1; index >= 0; index ++){
+    if (x[index] > y[index]) return 1;
+    else if (x[index] < y[index]) return -1;
+    else continue;
+  }
+  return 0;
+}
