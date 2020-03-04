@@ -241,7 +241,7 @@ int main() {
   input_data=Data_Generator<TPI, DATA_SIZE>(state, INSTANCES);
   for (int i = 0; i < INSTANCES; i ++){
     printf("After Initialized\n");
-    printf("check size: %d", (bits+31)/32);
+    printf("check size: %d", (DATA_SIZE+31)/32);
     print_words(((CPU_Data<DATA_SIZE>*)input_data)->x0[i]._limbs, (DATA_SIZE+31)/2);
     break;
   }
