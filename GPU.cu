@@ -74,12 +74,12 @@ __device__ __forceinline__ void GPUTask<tpi, bits>::x_test_mul(cgbn_mem_t<bits> 
   typename TaskBase<tpi, bits>::bn_t      x0, num, r;
   typename TaskBase<tpi, bits>::bn_wide_t w;
 
-  this->_env.load(x0, &(instances->x0[this->_instance]));
-  this->_env.load(num, &(instances->num));
+  this->_env.load(x0, &(instances_1[this->_instance]));
+  this->_env.load(num, &(bignum[0]));
 
   this->_env.mul_wide(w, x0, num);
   this->_env.set(r, w._low);
-  this->_env.store(&(res->r[this->_instance]), r);
+  this->_env.store(&(res[this->_instance]), r);
 }
 
 template<uint32_t tpi, uint32_t bits>
