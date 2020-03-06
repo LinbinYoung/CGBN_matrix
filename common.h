@@ -158,7 +158,7 @@ class CPU_Data : public DataBase<bits>{
     CPU_Data(int count):DataBase<bits>(count){
       this->x0 = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
       this->x1 = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
-      this->num = (cgbn_mem_t<bits> *)malloc(cgbn_mem_t<bits>);
+      this->num = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>));
     }
     ~CPU_Data(){
       free(this->x0);
