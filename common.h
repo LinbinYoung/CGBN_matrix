@@ -118,7 +118,7 @@ class DataBase{
   public:
     cgbn_mem_t<bits> *x0;
     cgbn_mem_t<bits> *x1;
-    cgbn_mem_t<bits> num;
+    cgbn_mem_t<bits> *num;
     DataBase(uint32_t count){}
     virtual ~DataBase(){}
 };
@@ -136,10 +136,12 @@ class GPU_Data : public DataBase<bits>{
     GPU_Data(int count):DataBase<bits>(count){
       CUDA_CHECK(cudaMalloc((void **)&this->x0, sizeof(cgbn_mem_t<bits>)*count));
       CUDA_CHECK(cudaMalloc((void **)&this->x1, sizeof(cgbn_mem_t<bits>)*count));
+      CUDA_CHECK(cudaMalloc((void **)&this->num, sizeof(cgbn_mem_t<bits>)));
     }
     ~GPU_Data(){
       CUDA_CHECK(cudaFree(this->x0));
       CUDA_CHECK(cudaFree(this->x1));
+      CUDA_CHECK(cudaFree(this->num));
     }
 };
 
@@ -156,30 +158,12 @@ class CPU_Data : public DataBase<bits>{
     CPU_Data(int count):DataBase<bits>(count){
       this->x0 = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
       this->x1 = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
+      this->num = (cgbn_mem_t<bits> *)malloc(cgbn_mem_t<bits>);
     }
     ~CPU_Data(){
       free(this->x0);
       free(this->x1);
-    }
-};
-
-/* 
-##################################
-FPGA_Data
-* x0: scalar 
-* x1: scalar
-* num: Big Number
-*/
-template<uint32_t bits>
-class FPGA_Data : public DataBase<bits>{
-    public:
-    FPGA_Data(int count):DataBase<bits>(count){
-      this->x0 = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
-      this->x1 = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
-    }
-    ~FPGA_Data(){
-      free(this->x0);
-      free(this->x1);
+      free(this->num);
     }
 };
 
@@ -224,23 +208,6 @@ class CPU_result : public ResultBase<bits>{
       this->r = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
     }
     ~CPU_result(){
-      free(this->r);
-    }
-};
-
-
-/* 
-##################################
-FPGA_result
-* r: scalar 
-*/
-template<uint32_t bits>
-class FPGA_result : public ResultBase<bits>{
-  public:
-    FPGA_result(int count):ResultBase<bits>(count){
-      this->r = (cgbn_mem_t<bits> *)malloc(sizeof(cgbn_mem_t<bits>)*count);
-    }
-    ~FPGA_result(){
       free(this->r);
     }
 };

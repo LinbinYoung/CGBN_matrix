@@ -61,9 +61,9 @@ class GPUTask : public TaskBase<tpi, bits> {
   public:
     __device__ __forceinline__ GPUTask(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : TaskBase<tpi, bits>(monitor, report, instance) {}  
 
-    __device__ __forceinline__  void x_test_add(GPU_Data<bits> *instances, GPU_result<bits> *res);
-    __device__ __forceinline__  void x_test_addui(GPU_Data<bits> *instances, GPU_result<bits> *res);
-    __device__ __forceinline__  void x_test_mul(GPU_Data<bits> *instances, GPU_result<bits> *res);
+    __device__ __forceinline__  void x_test_add(cgbn_mem_t<bits> *instances_1, cgbn_mem_t<bits> *instances_2, cgbn_mem_t<bits> *res);
+    __device__ __forceinline__  void x_test_addui(cgbn_mem_t<bits> *instances_1, cgbn_mem_t<bits> *bignum, cgbn_mem_t<bits> *res);
+    __device__ __forceinline__  void x_test_mul(cgbn_mem_t<bits> *instances_1, cgbn_mem_t<bits> *bignum, cgbn_mem_t<bits> *res);
 };
 
 #include "GPU.cu"
@@ -78,21 +78,21 @@ class GPUTask : public TaskBase<tpi, bits> {
  *   count       : number of instances
  */
 template<uint32_t tpi, uint32_t bits>
-void x_run_test(Compute_Type operation, DataBase<bits> *instances, ResultBase<bits> *res, uint32_t count) {
+void x_run_test(Compute_Type operation, GPU_Data<bits> *instances, GPU_result<bits> *res, uint32_t count) {
   int threads=128, IPB=threads/tpi, blocks=(count+IPB-1)*tpi/threads;
   printf("Number of threads in block %d\n", threads);
   printf("Number of instances can be processed %d\n", IPB);
   printf("Number of blocks %d\n", blocks);
   if(operation==xt_add){
-      x_test_add_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); 
+      x_test_add_kernel<tpi, bits><<<blocks, threads>>>(instances->x0, instances->x1, res->r, count); 
       CUDA_CHECK(cudaDeviceSynchronize());
   }
   else if (operation==xt_addui){
-      x_test_addui_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); 
+      x_test_addui_kernel<tpi, bits><<<blocks, threads>>>(instances->x0, instances->num, res->r, count); 
       CUDA_CHECK(cudaDeviceSynchronize());
   }
   else if (operation==xt_mul){
-      x_test_mul_kernel<tpi, bits><<<blocks, threads>>>((GPU_Data<bits>*)instances, (GPU_result<bits>*)res, count); 
+      x_test_mul_kernel<tpi, bits><<<blocks, threads>>>(instances->x0, instances->num, res->r, count); 
       CUDA_CHECK(cudaDeviceSynchronize());
   }
   else {
@@ -128,11 +128,12 @@ void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t
 
   CUDA_CHECK(cudaMemcpy(input_gpuins->x0, ((GPU_Data<bits>*)instances)->x0, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
   CUDA_CHECK(cudaMemcpy(input_gpuins->x1, ((GPU_Data<bits>*)instances)->x1, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyHostToDevice));
+  CUDA_CHECK(cudaMemcpy(input_gpuins->num, ((GPU_Data<bits>*)instances)->num, sizeof(cgbn_mem_t<bits>), cudaMemcpyHostToDevice));
   /*
    3. Start compute on GPU
   */
   Timer gpu;
-  x_run_test<tpi, bits>(operation, (GPU_Data<bits> *)input_gpuins, (GPU_result<bits> *)output_gpu, count);
+  x_run_test<tpi, bits>(operation, input_gpuins, output_gpu, count);
   printf("GPU, computation: %.31f s\n", gpu.stop());
   CUDA_CHECK(cudaMemcpy(((CPU_result<bits>*)res_cpu)->r, output_gpu->r, sizeof(cgbn_mem_t<bits>)*count, cudaMemcpyDeviceToHost)); //copy results back to memory
   /*
@@ -193,8 +194,10 @@ extern "C"{
       x_run_test<8, 2048>(operation, input, output, count);
     else if(tpi==16 && size==2048)
       x_run_test<16, 2048>(operation, input, output, count);
-    else if(tpi==32 && size==2048)
-      {printf("call run_gpu\n"); x_run_test<32, 2048>(operation, input, output, count);}
+    else if(tpi==32 && size==2048){
+      printf("call run_gpu interface\n"); 
+      x_run_test<32, 2048>(operation, input, output, count);
+    }
     else if(tpi==16 && size==3072)
       x_run_test<16, 3072>(operation, input, output, count);
     else if(tpi==32 && size==3072)
@@ -234,9 +237,7 @@ int main() {
   gmp_randstate_t  state;
   void             *input_data;
   void             *output_data;
-
   gmp_randinit_default(state);
-
   /*
    Start the task
   */
