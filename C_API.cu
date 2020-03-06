@@ -44,7 +44,7 @@ class TaskBase{
       mpz_init(value);
       mpz_init(fixedvalue);
       mpz_urandomb(fixedvalue, state, bits);
-      from_mpz(ins->num._limbs, bits/32, fixedvalue);
+      from_mpz(ins->num[0]._limbs, bits/32, fixedvalue);
       for (int index = 0; index < count; index ++){
         mpz_urandomb(value, state, bits);
         from_mpz(ins->x0[index]._limbs, bits/32, value);
