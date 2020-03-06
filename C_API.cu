@@ -222,7 +222,7 @@ extern "C"{
 }
 
 #ifndef INSTANCES
-#define INSTANCES 20
+#define INSTANCES 20000
 #endif
 
 #ifndef DATA_SIZE
