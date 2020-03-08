@@ -172,8 +172,8 @@ extern "C"{
       printf("Unsupported tpi and size -- needs to be added to x_run_test in xmp_tester.cu\n");
       exit(1);
     }
-    CPU_Data<size> *input = new CPU_Data<size>(count);
-    CPU_result<size> *output = new CPU_result<size>(count);
+    CPU_Data<const_cast<int>size> *input = new CPU_Data<const_cast<int>size>(count);
+    CPU_result<size> *output = new CPU_result<const_cast<int>size>(count);
     for (int i = 0; i < count; i ++){
       memcpy(input->x0 + i, input_0 + i, (size+7)/8);
       memcpy(input->x1 + i, input_1 + i, (size+7)/8);
@@ -255,6 +255,6 @@ int main() {
   cgbn_mem_t<DATA_SIZE>* result = (cgbn_mem_t<DATA_SIZE>*)malloc(sizeof(cgbn_mem_t<DATA_SIZE>)*INSTANCES);
   if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
   printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
-  run_gpu(XT_FIRST, TPI, DATA_SIZE, (CPU_Data*)input_data->x0, (CPU_Data*)input_data->x1, (CPU_Data*)input_data->num, (void*)result, INSTANCES);
+  run_gpu(XT_FIRST, TPI, DATA_SIZE, (CPU_Data<DATA_SIZE>*)input_data->x0, (CPU_Data<DATA_SIZE>*)input_data->x1, (CPU_Data<DATA_SIZE>*)input_data->num, (void*)result, INSTANCES);
   return 0;
 }
