@@ -196,8 +196,8 @@ extern "C"{
     //   x_run_test<16, 2048>(operation, (void*)input, (void*)output, count);
     // else 
     if(tpi==32 && size==2048){
-      CPU_Data<2048> *input = new CPU_Data<size>(count);
-      CPU_result<2048> *output = new CPU_result<size>(count);
+      CPU_Data<2048> *input = new CPU_Data<2048>(count);
+      CPU_result<2048> *output = new CPU_result<2048>(count);
       for (int i = 0; i < count; i ++){
         memcpy(input->x0 + i, input_0 + i, (size+7)/8);
         memcpy(input->x1 + i, input_1 + i, (size+7)/8);
