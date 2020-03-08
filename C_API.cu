@@ -167,13 +167,13 @@ extern "C"{
   *   output      : the output
   *   count       : number of instance
   */
-  void run_gpu(Compute_Type operation, uint32_t tpi, uint32_t size, uint32_t *input_0, uint32_t *input_1, uint32_t *input_2, void *output_data, uint32_t count) {
+  void run_gpu(Compute_Type operation, const uint32_t tpi, const uint32_t size, uint32_t *input_0, uint32_t *input_1, uint32_t *input_2, void *output_data, uint32_t count) {
     if(!supported_tpi_size(tpi, size)) {
       printf("Unsupported tpi and size -- needs to be added to x_run_test in xmp_tester.cu\n");
       exit(1);
     }
-    CPU_Data<const_cast<uint32_t>(size)> *input = new CPU_Data<const_cast<uint32_t>(size)>(count);
-    CPU_result<size> *output = new CPU_result<const_cast<uint32_t>(size)>(count);
+    CPU_Data<size> *input = new CPU_Data<size>(count);
+    CPU_result<size> *output = new CPU_result<size>(count);
     for (int i = 0; i < count; i ++){
       memcpy(input->x0 + i, input_0 + i, (size+7)/8);
       memcpy(input->x1 + i, input_1 + i, (size+7)/8);
