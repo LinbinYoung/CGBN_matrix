@@ -172,61 +172,62 @@ extern "C"{
       printf("Unsupported tpi and size -- needs to be added to x_run_test in xmp_tester.cu\n");
       exit(1);
     }
-    CPU_Data<size> *input = new CPU_Data<size>(count);
-    CPU_result<size> *output = new CPU_result<size>(count);
-    for (int i = 0; i < count; i ++){
-      memcpy(input->x0 + i, input_0 + i, (size+7)/8);
-      memcpy(input->x1 + i, input_1 + i, (size+7)/8);
-    }
-    memcpy(input->num, input_2, (size+7)/8);
-    if(tpi==4 && size==128)
-      x_run_test<4, 128>(operation, (void*)input, (void*)output, count);
-    else if(tpi==4 && size==256)
-      x_run_test<4, 256>(operation, (void*)input, (void*)output, count);
-    else if(tpi==8 && size==256)
-      x_run_test<8, 256>(operation, (void*)input, (void*)output, count);
-    else if(tpi==4 && size==512)
-      x_run_test<4, 512>(operation, (void*)input, (void*)output, count);
-    else if(tpi==8 && size==512)
-      x_run_test<8, 512>(operation, (void*)input, (void*)output, count);
-    else if(tpi==16 && size==512)
-      x_run_test<16, 512>(operation, (void*)input, (void*)output, count);
-    else if(tpi==8 && size==1024)
-      x_run_test<8, 1024>(operation, (void*)input, (void*)output, count);
-    else if(tpi==16 && size==1024)
-      x_run_test<16, 1024>(operation, (void*)input, (void*)output, count);
-    else if(tpi==32 && size==1024)
-      x_run_test<32, 1024>(operation, (void*)input, (void*)output, count);
-    else if(tpi==8 && size==2048)
-      x_run_test<8, 2048>(operation, (void*)input, (void*)output, count);
-    else if(tpi==16 && size==2048)
-      x_run_test<16, 2048>(operation, (void*)input, (void*)output, count);
-    else if(tpi==32 && size==2048){
+    // if(tpi==4 && size==128)
+    //   x_run_test<4, 128>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==4 && size==256)
+    //   x_run_test<4, 256>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==8 && size==256)
+    //   x_run_test<8, 256>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==4 && size==512)
+    //   x_run_test<4, 512>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==8 && size==512)
+    //   x_run_test<8, 512>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==16 && size==512)
+    //   x_run_test<16, 512>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==8 && size==1024)
+    //   x_run_test<8, 1024>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==16 && size==1024)
+    //   x_run_test<16, 1024>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==32 && size==1024)
+    //   x_run_test<32, 1024>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==8 && size==2048)
+    //   x_run_test<8, 2048>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==16 && size==2048)
+    //   x_run_test<16, 2048>(operation, (void*)input, (void*)output, count);
+    // else 
+    if(tpi==32 && size==2048){
+      CPU_Data<2048> *input = new CPU_Data<size>(count);
+      CPU_result<2048> *output = new CPU_result<size>(count);
+      for (int i = 0; i < count; i ++){
+        memcpy(input->x0 + i, input_0 + i, (size+7)/8);
+        memcpy(input->x1 + i, input_1 + i, (size+7)/8);
+      }
+      memcpy(input->num, input_2, (size+7)/8);
       x_run_test<32, 2048>(operation, (void*)input, (void*)output, count);
+      memcpy(output_data, output->r, ((size+7)/8)*count);
+      delete input;
+      delete output;
     }
-    else if(tpi==16 && size==3072)
-      x_run_test<16, 3072>(operation, (void*)input, (void*)output, count);
-    else if(tpi==32 && size==3072)
-      x_run_test<32, 3072>(operation, (void*)input, (void*)output, count);
-    else if(tpi==16 && size==4096)
-      x_run_test<16, 4096>(operation, (void*)input, (void*)output, count);
-    else if(tpi==32 && size==4096)
-      x_run_test<32, 4096>(operation, (void*)input, (void*)output, count);
-    else if(tpi==32 && size==5120)
-      x_run_test<32, 5120>(operation, (void*)input, (void*)output, count);
-    else if(tpi==32 && size==6144)
-      x_run_test<32, 6144>(operation, (void*)input, (void*)output, count);
-    else if(tpi==32 && size==7168)
-      x_run_test<32, 7168>(operation, (void*)input, (void*)output, count);
-    else if(tpi==32 && size==8192)
-      x_run_test<32, 8192>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==16 && size==3072)
+    //   x_run_test<16, 3072>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==32 && size==3072)
+    //   x_run_test<32, 3072>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==16 && size==4096)
+    //   x_run_test<16, 4096>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==32 && size==4096)
+    //   x_run_test<32, 4096>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==32 && size==5120)
+    //   x_run_test<32, 5120>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==32 && size==6144)
+    //   x_run_test<32, 6144>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==32 && size==7168)
+    //   x_run_test<32, 7168>(operation, (void*)input, (void*)output, count);
+    // else if(tpi==32 && size==8192)
+    //   x_run_test<32, 8192>(operation, (void*)input, (void*)output, count);
     else {
       printf("internal error -- tpi/size -- needs to be added to x_run_test in xmp_tester.cu\n");
       exit(1);
     }
-    memcpy(output_data, output->r, ((size+7)/8)*count);
-    delete input;
-    delete output;
   }
 }
 
@@ -255,6 +256,6 @@ int main() {
   cgbn_mem_t<DATA_SIZE>* result = (cgbn_mem_t<DATA_SIZE>*)malloc(sizeof(cgbn_mem_t<DATA_SIZE>)*INSTANCES);
   if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
   printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
-  run_gpu(XT_FIRST, TPI, DATA_SIZE, (CPU_Data<DATA_SIZE>*)input_data->x0, (CPU_Data<DATA_SIZE>*)input_data->x1, (CPU_Data<DATA_SIZE>*)input_data->num, (void*)result, INSTANCES);
+  run_gpu(XT_FIRST, TPI, DATA_SIZE, (uint32_t*)(CPU_Data<DATA_SIZE>*)input_data->x0, (uint32_t*)(CPU_Data<DATA_SIZE>*)input_data->x1, (uint32_t*)(CPU_Data<DATA_SIZE>*)input_data->num, (void*)result, INSTANCES);
   return 0;
 }
