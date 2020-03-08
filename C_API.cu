@@ -172,8 +172,8 @@ extern "C"{
       printf("Unsupported tpi and size -- needs to be added to x_run_test in xmp_tester.cu\n");
       exit(1);
     }
-    CPU_Data<const_cast<int>size> *input = new CPU_Data<const_cast<int>size>(count);
-    CPU_result<size> *output = new CPU_result<const_cast<int>size>(count);
+    CPU_Data<const_cast<uint32_t>(size)> *input = new CPU_Data<const_cast<uint32_t>(size)>(count);
+    CPU_result<size> *output = new CPU_result<const_cast<uint32_t>(size)>(count);
     for (int i = 0; i < count; i ++){
       memcpy(input->x0 + i, input_0 + i, (size+7)/8);
       memcpy(input->x1 + i, input_1 + i, (size+7)/8);
