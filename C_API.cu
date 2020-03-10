@@ -167,11 +167,12 @@ extern "C"{
   *   output      : the output
   *   count       : number of instance
   */
-  void run_gpu(Compute_Type operation, uint32_t tpi, uint32_t size, uint32_t *input_0, uint32_t *input_1, uint32_t *input_2, void *output_data, uint32_t count) {
+  void run_gpu(uint32_t operation, uint32_t tpi, uint32_t size, uint32_t *input_0, uint32_t *input_1, uint32_t *input_2, void *output_data, uint32_t count) {
     if(!supported_tpi_size(tpi, size)) {
       printf("Unsupported tpi and size -- needs to be added to x_run_test in xmp_tester.cu\n");
       exit(1);
     }
+    Compute_Type op = Compute_Type(operation);
     // if(tpi==4 && size==128)
     //   x_run_test<4, 128>(operation, (void*)input, (void*)output, count);
     // else if(tpi==4 && size==256)
@@ -203,7 +204,7 @@ extern "C"{
         memcpy(input->x1 + i, input_1 + i, (size+7)/8);
       }
       memcpy(input->num, input_2, (size+7)/8);
-      x_run_test<32, 2048>(operation, (void*)input, (void*)output, count);
+      x_run_test<32, 2048>(op, (void*)input, (void*)output, count);
       memcpy(output_data, output->r, ((size+7)/8)*count);
       delete input;
       delete output;
@@ -256,6 +257,6 @@ int main() {
   cgbn_mem_t<DATA_SIZE>* result = (cgbn_mem_t<DATA_SIZE>*)malloc(sizeof(cgbn_mem_t<DATA_SIZE>)*INSTANCES);
   if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
   printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
-  run_gpu(XT_FIRST, TPI, DATA_SIZE, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->x0, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->x1, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->num, (void*)result, INSTANCES);
+  run_gpu(3, TPI, DATA_SIZE, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->x0, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->x1, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->num, (void*)result, INSTANCES);
   return 0;
 }
