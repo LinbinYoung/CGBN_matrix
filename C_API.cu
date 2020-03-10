@@ -112,7 +112,7 @@ void x_run_test(Compute_Type operation, GPU_Data<bits> *instances, GPU_result<bi
  *   repetitions : repetitions for each task
  */
 template<uint32_t tpi, uint32_t bits>
-void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t count) {
+void x_run_test(int operation, void *instances, void *res_cpu, uint32_t count) {
 
   /*
     1. Allocate memory for input and output data
