@@ -112,7 +112,7 @@ void x_run_test(Compute_Type operation, GPU_Data<bits> *instances, GPU_result<bi
  *   repetitions : repetitions for each task
  */
 template<uint32_t tpi, uint32_t bits>
-void x_run_test(Compute_Type operation, void *instances, void *res_cpu, uint32_t count) {
+void x_run_test(int operation, void *instances, void *res_cpu, uint32_t count) {
 
   /*
     1. Allocate memory for input and output data
@@ -257,6 +257,10 @@ int main() {
   cgbn_mem_t<DATA_SIZE>* result = (cgbn_mem_t<DATA_SIZE>*)malloc(sizeof(cgbn_mem_t<DATA_SIZE>)*INSTANCES);
   if(!supported_tpi_size(TPI, DATA_SIZE))return 0;
   printf("... %s %d:%d ... ", actual_compute_name(XT_FIRST), DATA_SIZE, TPI); fflush(stdout);
+<<<<<<< HEAD
   run_gpu(3, TPI, DATA_SIZE, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->x0, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->x1, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->num, (void*)result, INSTANCES);
+=======
+  run_gpu(2, TPI, DATA_SIZE, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->x0, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->x1, (uint32_t*)((CPU_Data<DATA_SIZE>*)input_data)->num, (void*)result, INSTANCES);
+>>>>>>> 294aa0b18f51638fcd8c0b85d62fd982c7b761aa
   return 0;
 }
