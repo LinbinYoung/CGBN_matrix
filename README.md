@@ -1,4 +1,4 @@
-C/C++, CUDA as Backend, Python as FrontEnd
+C/C++, CUDA as Backend, Python as frontEnd
 
 ### Compute Interface
 
