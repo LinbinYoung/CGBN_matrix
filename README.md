@@ -1,4 +1,6 @@
-### 计算接口
+C/C++, CUDA as Backend, Python as FrontEnd
+
+### Compute Interface
 
 可调整参数：算子操作类型，TPI，数据大小，数据总量
 ```c++
